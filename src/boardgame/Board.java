@@ -38,4 +38,14 @@ public class Board {
 		return pieces[position.getRow()][position.getColumn()];
 	}
 	
+	// Metodo responsavel por colocar a peca em determinada posicao
+	public void placePiece(Piece piece, Position position) {
+		pieces[position.getRow()][position.getColumn()] = piece;  // Na matriz de peca, na determinada linha/coluna a peca do argumento sera atribuida
+		piece.position = position; 
+	}
+	
 }
+
+
+
+
