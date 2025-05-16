@@ -2,16 +2,40 @@ package boardgame;
 
 public class Board {
 
-	private int rows;
+	private int row;
 	private int column;
 	private Piece[][] pieces;
 	
-	public Board(int rows, int column) {
+	public Board(int row, int column) {
 		super();
-		this.rows = rows;
+		this.row = row;
 		this.column = column;
-		pieces = new Piece[rows][column];
+		pieces = new Piece[row][column];
+	}
+
+	public int getrow() {
+		return row;
+	}
+
+	public void setrow(int row) {
+		this.row = row;
+	}
+
+	public int getColumn() {
+		return column;
+	}
+
+	public void setColumn(int column) {
+		this.column = column;
 	}
 	
+	public Piece piece(int row, int column) {
+		return pieces[row][column];  // Retorna a peca respectiva daquela linha e coluna
+	}
+	
+	// Sobrecarga de metodo
+	public Piece piece(Position position) {
+		return pieces[position.getRow()][position.getColumn()];
+	}
 	
 }
