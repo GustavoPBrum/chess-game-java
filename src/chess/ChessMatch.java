@@ -34,13 +34,19 @@ public class ChessMatch { // Coracao do sistema de xadrez, onde ficara as regras
 		// Temos que validar se a posicao inicial da peca existe
 		validateSourcePosition(source);
 		
-		Piece capturedPiece = makeMove(source, target);  // A peca que foi removida sera a peca capturada
+		Piece capturedPiece = makeMove(source, target);  // A peca que foi removida sera a peca capturada e armazenada na variavel
+		
+		// A peca de origem que esta no destino ja esta no tabuleiro, apenas retornamos a peca que foi removida pois atualizaremos o tabuleiro com ela
+		// E na interface grafica podemos informar as pecas removidas de cada cor para o jogador
 		return (ChessPiece)capturedPiece;
 	}
 	
+	// Alem de mover a peca de origem para a peca de destino, tambem e capturar qualquer peca que estiver na posicao de destino
 	private Piece makeMove(Position source, Position target) {
 		Piece p = board.removePiece(source);  // Remove a peca da pos de origem
-		Piece capturedPiece = board.removePiece(target);  // Removemos a possivel peca que esteja na pos de destino
+		
+		// Tenta remover a peca na pos de destino, se houver ela sera retornada e armazenada na variavel
+		Piece capturedPiece = board.removePiece(target);  
 		
 		// Pegamos a peca p de origem e atribuimos a ela a posicao de destino
 		board.placePiece(p, target);
