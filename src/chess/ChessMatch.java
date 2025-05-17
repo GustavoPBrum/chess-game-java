@@ -34,6 +34,8 @@ public class ChessMatch { // Coracao do sistema de xadrez, onde ficara as regras
 		// Temos que validar se a posicao inicial da peca existe
 		validateSourcePosition(source);
 		
+		validateTargetPosition(source, target);
+		
 		Piece capturedPiece = makeMove(source, target);  // A peca que foi removida sera a peca capturada e armazenada na variavel
 		
 		// A peca de origem que esta no destino ja esta no tabuleiro, apenas retornamos a peca que foi removida pois atualizaremos o tabuleiro com ela
@@ -60,6 +62,13 @@ public class ChessMatch { // Coracao do sistema de xadrez, onde ficara as regras
 		} 
 		if(!board.piece(position).isThereAnyPossibleMove()) {  // Se nao existir nenhum movimento possivel
 			throw new ChessException("There is no possible moves for the chosen piece");
+		}
+	}
+	
+	private void validateTargetPosition (Position source, Position target) {
+		// Se a peca na posicao de orige nao conseguir mover para a posicao de destino...
+		if(!board.piece(source).possibleMove(target)) {
+			throw new ChessException("The Chosen piece can't move to target position");
 		}
 	}
 	
