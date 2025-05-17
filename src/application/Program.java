@@ -31,7 +31,7 @@ public class Program {
 				ChessPosition target = UI.readChessPosition(sc);
 				
 				// Movemos agora a peca no tabuleiro e guardamos a peca removida (caso tenha)
-				ChessPiece capturedPiece = chessMatch.performChessMove(source, target);
+				ChessPiece capturedPiece = chessMatch.performChessMove(source, target);  
 			}
 			catch (ChessException e ) {
 				System.out.println(e.getMessage());

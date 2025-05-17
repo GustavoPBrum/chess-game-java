@@ -57,6 +57,9 @@ public class ChessMatch { // Coracao do sistema de xadrez, onde ficara as regras
 	private void validateSourcePosition(Position position) {
 		if(!board.thereIsAPiece(position)) {  // Para caso nao exista uma peca nessa posicao
 			throw new ChessException("There is no piece on source position");
+		} 
+		if(!board.piece(position).isThereAnyPossibleMove()) {  // Se nao existir nenhum movimento possivel
+			throw new ChessException("There is no possible moves for the chosen piece");
 		}
 	}
 	
