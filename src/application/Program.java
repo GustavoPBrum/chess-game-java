@@ -1,4 +1,4 @@
-package application;
+ package application;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -25,6 +25,10 @@ public class Program {
 				System.out.print("Source: ");
 				//Posicao de origem que o usuario quer mover
 				ChessPosition source = UI.readChessPosition(sc);  // Posicao lida e instanciada indicada pelo usuario;
+				
+				boolean[][] possibleMoves = chessMatch.possibleMoves(source);
+				UI.clearScreen();
+				UI.printBoard(chessMatch.getPieces(), possibleMoves);  // Sobrecarga onde imprime as pecas junto das posicoes possiveis coloridas
 				
 				System.out.println();
 				System.out.print("Target: ");

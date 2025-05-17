@@ -23,6 +23,8 @@ public class Rook extends ChessPiece {
 		Position p = new Position(0, 0); // Valor inicial
 
 		// Acima 
+		// 'p' -> variavel posicao p criada para auxiliar
+		// position -> posicao atual da nossa torre que usamos para setar a variavel auxiliar
 		p.setValues(position.getRow() - 1, position.getColumn());  // Usando a posicao atual da torre para setar os valores de posicao da 'Position p'
 
 		// Enquanto existir posicao e nao for uma peca, recebera true (isto para subir)

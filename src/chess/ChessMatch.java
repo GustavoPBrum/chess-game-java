@@ -25,6 +25,14 @@ public class ChessMatch { // Coracao do sistema de xadrez, onde ficara as regras
 		return mat;
 	}
 	
+	// Este metodo serve para que possamos imprimir na aplicacao as posicoes *possiveis* apartir da posicao de **origem**
+	public boolean[][] possibleMoves(ChessPosition sourcePosition) {
+		Position position = sourcePosition.toPosition();  // Convertemos  de uma pos de xadrez para de matriz normal
+		validateSourcePosition(position);
+		// Movimentos possiveis da peca, nesta posicao
+		return board.piece(position).possibleMoves();
+	}
+	
 	// Metodo de movimento da peca de xadrez
 	public ChessPiece performChessMove(ChessPosition sourcePosition, ChessPosition targetPosition) {
 		// Convertendo essas posicoes para posicoes da matriz
