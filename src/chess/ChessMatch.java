@@ -2,6 +2,7 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import boardgame.Board;
 import boardgame.Piece;
@@ -14,6 +15,7 @@ public class ChessMatch { // Coracao do sistema de xadrez, onde ficara as regras
 	private int turn;
 	private Color currentPlayer;
 	private Board board;
+	private boolean check;
 	
 	private List<Piece> piecesOnTheBoard = new ArrayList<>();
 	private List<Piece> capturedPieces = new ArrayList<>();
@@ -31,6 +33,10 @@ public class ChessMatch { // Coracao do sistema de xadrez, onde ficara as regras
 	
 	public Color getCurrentPlayer() {
 		return currentPlayer;
+	}
+	
+	public boolean getCheck() {
+		return check;
 	}
 	
 	public ChessPiece[][] getPieces() {
@@ -64,6 +70,13 @@ public class ChessMatch { // Coracao do sistema de xadrez, onde ficara as regras
 		
 		Piece capturedPiece = makeMove(source, target);  // A peca que foi removida sera a peca capturada e armazenada na variavel
 		
+		if(testCheck(currentPlayer)) {
+			undoMove(source, target, capturedPiece);
+			throw new ChessException("You can't put yourself in check");
+		}
+		
+		check = (testCheck(opponent(currentPlayer))) ? true : false;
+		 
 		// A peca de origem que esta no destino ja esta no tabuleiro, apenas retornamos a peca que foi removida pois atualizaremos o tabuleiro com ela
 		// E na interface grafica podemos informar as pecas removidas de cada cor para o jogador
 
@@ -90,6 +103,18 @@ public class ChessMatch { // Coracao do sistema de xadrez, onde ficara as regras
 		return capturedPiece;
 	}
 	
+	private void undoMove(Position source, Position target, Piece capturedPiece) {
+		// Desfazemos a jogada e peca capturada
+		Piece p = board.removePiece(target);
+		board.placePiece(p, source);
+		
+		if(capturedPiece != null) {
+			board.placePiece(capturedPiece, target);
+			capturedPieces.remove(capturedPiece);
+			piecesOnTheBoard.add(capturedPiece);
+		}
+	}
+	
 	private void validateSourcePosition(Position position) {
 		if(!board.thereIsAPiece(position)) {  // Para caso nao exista uma peca nessa posicao
 			throw new ChessException("There is no piece on source position");
@@ -113,6 +138,35 @@ public class ChessMatch { // Coracao do sistema de xadrez, onde ficara as regras
 		turn++;
 		// Fazemos a operacao ternaria
 		currentPlayer = (currentPlayer == Color.WHITE) ? Color.BLACK : Color.WHITE;
+	}
+	
+	private Color opponent(Color color) {
+		return (color == Color.WHITE) ? Color.BLACK : Color.WHITE;
+	}
+	
+	private ChessPiece king(Color color) {
+		// Tem que ser a lista de pecas em jogo
+		List<Piece> list = piecesOnTheBoard.stream().filter(x -> ((ChessPiece)x).getColor() == color).collect(Collectors.toList());
+		for(Piece p : list) {
+			if(p instanceof King) {
+				return (ChessPiece)p;
+			}
+		}
+		throw new IllegalStateException("There is no " + color + " king on the board"); 
+	}
+	
+	private boolean testCheck(Color color) { 
+		// Pegamos a posicao do Rei com king
+		Position kingPosition = king(color).getChessPosition().toPosition();
+		List<Piece> opponentPieces = piecesOnTheBoard.stream().filter(x -> ((ChessPiece)x).getColor() == opponent(color)).collect(Collectors.toList());
+		
+		for(Piece p : opponentPieces) {  // Varre as pecas adversarias
+			boolean[][] mat = p.possibleMoves();  // Teste os movimentos possiveis de cada peca
+			if(mat[kingPosition.getRow()][kingPosition.getColumn()]) {  // Se alguma coincidir com a pos do rei...
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	// Instanciamos uma posicao, passando as coordenadas/posicoes do xadrez

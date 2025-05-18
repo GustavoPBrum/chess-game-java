@@ -29,7 +29,8 @@ public class ChessPosition {
 	
 	protected static ChessPosition fromPosition(Position position) {
 		// No xadrez primeiro falamos a coluna e apos a linha
-		return new ChessPosition((char)('a' - position.getColumn()), 8 - position.getRow());
+		//							    'a' + 3 = 'd' exemplo
+		return new ChessPosition((char)('a' + position.getColumn()), 8 - position.getRow());
 	}
 	
 	@Override

@@ -17,6 +17,14 @@ public abstract class ChessPiece extends Piece {
 		return color;
 	}
 	
+	public ChessPosition getChessPosition(Position position) {
+		return ChessPosition.fromPosition(position);  // Retorna a posicao de matriz convertida para posicao de xadrez
+	}
+	
+	public ChessPosition getChessPosition() {
+		return ChessPosition.fromPosition(position);
+	}
+	
 	protected boolean isOpponentPiece (Position position) {
 		ChessPiece p = (ChessPiece) getBoard().piece(position);  // 'p' recebe a peca na determinada posicao
 		
