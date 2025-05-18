@@ -16,6 +16,7 @@ public class ChessMatch { // Coracao do sistema de xadrez, onde ficara as regras
 	private Color currentPlayer;
 	private Board board;
 	private boolean check;
+	private boolean checkMate;
 	
 	private List<Piece> piecesOnTheBoard = new ArrayList<>();
 	private List<Piece> capturedPieces = new ArrayList<>();
@@ -37,6 +38,10 @@ public class ChessMatch { // Coracao do sistema de xadrez, onde ficara as regras
 	
 	public boolean getCheck() {
 		return check;
+	}
+	
+	public boolean getCheckMate() {
+		return checkMate;
 	}
 	
 	public ChessPiece[][] getPieces() {
@@ -80,7 +85,13 @@ public class ChessMatch { // Coracao do sistema de xadrez, onde ficara as regras
 		// A peca de origem que esta no destino ja esta no tabuleiro, apenas retornamos a peca que foi removida pois atualizaremos o tabuleiro com ela
 		// E na interface grafica podemos informar as pecas removidas de cada cor para o jogador
 
-		nextTurn(); 
+		// Se o oponente da peca que mexeu ficou em checkMate
+		if(testCheckMate(opponent(currentPlayer))) {
+			checkMate = true;
+		}
+		else {
+			nextTurn(); 
+		}
 		
 		return (ChessPiece)capturedPiece;
 	}
@@ -169,6 +180,42 @@ public class ChessMatch { // Coracao do sistema de xadrez, onde ficara as regras
 		return false;
 	}
 	
+	private boolean testCheckMate(Color color) {
+		if(!testCheck(color)) {
+			return false;
+		}
+		List<Piece> list = piecesOnTheBoard.stream().filter(x -> ((ChessPiece)x).getColor() == color).collect(Collectors.toList());
+		
+		// Se esgotar o for e nao encontrar nenhum movimento possivel de uma peca da mesma cor que tire do check mate
+		for(Piece p : list) { 
+			boolean[][] mat = p.possibleMoves();  // Pegamos os movimentos possiveis de cada peca
+			
+			// Percorre a matriz de movimentos possiveis de cada peca
+			for(int i = 0; i < board.getrows(); i++) {
+				for(int j = 0; j < board.getrows(); j++) {
+					if(mat[i][j]) {  // Se for um movimento possivel
+						
+						// Movemos a peca p para a posicao possivel para conferir se ainda eh um check
+						// Downcasting pra chesspiece, pegamos sua posicao do xadrez e a convertemos para uma posicao da matriz
+						Position source = ((ChessPiece)p).getChessPosition().toPosition();
+						Position target = new Position(i, j);
+						Piece capturedPiece = makeMove(source, target);  // Fizemos o movimento para testar
+						
+						// Teste se o rei da determinada cor ainda esta em check
+						boolean testMate= testCheck(color);  
+						undoMove(source, target, capturedPiece);  // O cancelamos apos teste
+						
+						// Se estiver em check
+						if(!testMate) {
+							return false;
+						}
+					}
+				}
+			}
+		}
+		return true;
+	}
+	
 	// Instanciamos uma posicao, passando as coordenadas/posicoes do xadrez
 	private void placeNewPiece(char column, int row, ChessPiece piece) {
 		// Primeiro instanciamos a posicao de xadrez, e apos utilizamos o metodo para muda-la para posicao de matriz
@@ -179,18 +226,12 @@ public class ChessMatch { // Coracao do sistema de xadrez, onde ficara as regras
 	}
 	
 	private void initialSetup() {
-		placeNewPiece('c', 1, new Rook(board, Color.WHITE));
-        placeNewPiece('c', 2, new Rook(board, Color.WHITE));
-        placeNewPiece('d', 2, new Rook(board, Color.WHITE));
-        placeNewPiece('e', 2, new Rook(board, Color.WHITE));
-        placeNewPiece('e', 1, new Rook(board, Color.WHITE));
-        placeNewPiece('d', 1, new King(board, Color.WHITE));
 
-        placeNewPiece('c', 7, new Rook(board, Color.BLACK));
-        placeNewPiece('c', 8, new Rook(board, Color.BLACK));
-        placeNewPiece('d', 7, new Rook(board, Color.BLACK));
-        placeNewPiece('e', 7, new Rook(board, Color.BLACK));
-        placeNewPiece('e', 8, new Rook(board, Color.BLACK));
-        placeNewPiece('d', 8, new King(board, Color.BLACK));
+        placeNewPiece('h', 7, new Rook(board, Color.WHITE));
+        placeNewPiece('d', 1, new Rook(board, Color.WHITE));
+        placeNewPiece('e', 1, new King(board, Color.WHITE));
+        
+        placeNewPiece('b', 8, new Rook(board, Color.BLACK));
+        placeNewPiece('a', 8, new King(board, Color.BLACK));
 	}
 }
