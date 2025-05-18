@@ -8,11 +8,23 @@ import chess.pieces.Rook;
 
 public class ChessMatch { // Coracao do sistema de xadrez, onde ficara as regras do jogo
 
+	private int turn;
+	private Color currentPlayer;
 	private Board board;
 
 	public ChessMatch() {
 		board = new Board(8, 8);
+		turn = 1;
+		currentPlayer = Color.WHITE;
 		initialSetup();
+	}
+	
+	public int getTurn() {
+		return turn;
+	}
+	
+	public Color getCurrentPlayer() {
+		return currentPlayer;
 	}
 	
 	public ChessPiece[][] getPieces() {
@@ -48,6 +60,9 @@ public class ChessMatch { // Coracao do sistema de xadrez, onde ficara as regras
 		
 		// A peca de origem que esta no destino ja esta no tabuleiro, apenas retornamos a peca que foi removida pois atualizaremos o tabuleiro com ela
 		// E na interface grafica podemos informar as pecas removidas de cada cor para o jogador
+
+		nextTurn(); 
+		
 		return (ChessPiece)capturedPiece;
 	}
 	
@@ -68,6 +83,9 @@ public class ChessMatch { // Coracao do sistema de xadrez, onde ficara as regras
 		if(!board.thereIsAPiece(position)) {  // Para caso nao exista uma peca nessa posicao
 			throw new ChessException("There is no piece on source position");
 		} 
+		if(currentPlayer != ((ChessPiece)board.piece(position)).getColor()) {
+			throw new ChessException("The chosen piece is not yours");
+		}
 		if(!board.piece(position).isThereAnyPossibleMove()) {  // Se nao existir nenhum movimento possivel
 			throw new ChessException("There is no possible moves for the chosen piece");
 		}
@@ -78,6 +96,12 @@ public class ChessMatch { // Coracao do sistema de xadrez, onde ficara as regras
 		if(!board.piece(source).possibleMove(target)) {
 			throw new ChessException("The Chosen piece can't move to target position");
 		}
+	}
+	
+	private void nextTurn() {
+		turn++;
+		// Fazemos a operacao ternaria
+		currentPlayer = (currentPlayer == Color.WHITE) ? Color.BLACK : Color.WHITE;
 	}
 	
 	// Instanciamos uma posicao, passando as coordenadas/posicoes do xadrez
