@@ -98,7 +98,8 @@ public class ChessMatch { // Coracao do sistema de xadrez, onde ficara as regras
 	
 	// Alem de mover a peca de origem para a peca de destino, tambem e capturar qualquer peca que estiver na posicao de destino
 	private Piece makeMove(Position source, Position target) {
-		Piece p = board.removePiece(source);  // Remove a peca da pos de origem
+		ChessPiece p = (ChessPiece)board.removePiece(source);  // Remove a peca da pos de origem
+		p.increaseMoveCount();
 		
 		// Tenta remover a peca na pos de destino, se houver ela sera retornada e armazenada na variavel
 		Piece capturedPiece = board.removePiece(target);  
@@ -116,7 +117,9 @@ public class ChessMatch { // Coracao do sistema de xadrez, onde ficara as regras
 	
 	private void undoMove(Position source, Position target, Piece capturedPiece) {
 		// Desfazemos a jogada e peca capturada
-		Piece p = board.removePiece(target);
+		ChessPiece p = (ChessPiece)board.removePiece(target);
+		p.decreaseMoveCount();
+		
 		board.placePiece(p, source);
 		
 		if(capturedPiece != null) {
