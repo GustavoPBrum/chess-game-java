@@ -82,11 +82,12 @@ public class ChessMatch { // Coracao do sistema de xadrez, onde ficara as regras
 		// Temos que validar se a posicao inicial da peca existe
 		validateSourcePosition(source);
 
-		validateTargetPosition(source, target); 
+		validateTargetPosition(source, target);
 
-		Piece capturedPiece = makeMove(source, target); // A peca que foi removida sera a peca capturada e armazenada na variavel
-		
-		ChessPiece movedPiece = (ChessPiece)board.piece(target);  // Peca que foi movida para tratamento pra enPassant
+		Piece capturedPiece = makeMove(source, target); // A peca que foi removida sera a peca capturada e armazenada na
+														// variavel
+
+		ChessPiece movedPiece = (ChessPiece) board.piece(target); // Peca que foi movida para tratamento pra enPassant
 
 		if (testCheck(currentPlayer)) {
 			undoMove(source, target, capturedPiece);
@@ -106,12 +107,12 @@ public class ChessMatch { // Coracao do sistema de xadrez, onde ficara as regras
 		} else {
 			nextTurn();
 		}
-		
+
 		// #specialmove en passant
-		if(movedPiece instanceof Pawn && (target.getRow() == source.getRow() - 2 || target.getRow() == source.getRow() + 2)) {
+		if (movedPiece instanceof Pawn
+				&& (target.getRow() == source.getRow() - 2 || target.getRow() == source.getRow() + 2)) {
 			enPassantVunerable = movedPiece;
-		}
-		else {
+		} else {
 			enPassantVunerable = null;
 		}
 
@@ -141,7 +142,8 @@ public class ChessMatch { // Coracao do sistema de xadrez, onde ficara as regras
 		// Se for uma instancia do rei e o rei andou duas casas em comparacao a posicao
 		// de origem
 		if (p instanceof King && target.getColumn() == source.getColumn() + 2) {
-			Position sourceT = new Position(source.getRow(), source.getColumn() + 3); // Posicao de origem em comparacao ao rei
+			Position sourceT = new Position(source.getRow(), source.getColumn() + 3); // Posicao de origem em comparacao
+																						// ao rei
 			Position targetT = new Position(source.getRow(), source.getColumn() + 1); // Destino em comparacao ao rei
 
 			// Removemos a torre de onde estava
@@ -161,6 +163,26 @@ public class ChessMatch { // Coracao do sistema de xadrez, onde ficara as regras
 			board.placePiece(rook, targetT);
 			rook.increaseMoveCount();
 		}
+
+		// #specialmove en passant
+		if (p instanceof Pawn) {
+			// Peao so pode andar na diagonal para uma casa vazia e sem uma captura se foi
+			// um en passant
+			if (source.getColumn() != target.getColumn() && capturedPiece == null) { // Mudou de coluna e nao tem peca
+																						// capturada
+				Position pawnPosition;
+				if (p.getColor() == Color.WHITE) {
+					pawnPosition = new Position(target.getRow() + 1, target.getColumn()); // Peca capturada vai estar em
+																							// baixo do peao branco
+				} else {
+					pawnPosition = new Position(target.getRow() - 1, target.getColumn());
+				}
+				capturedPiece = board.removePiece(pawnPosition); // Removemos do tabuleiro
+				capturedPieces.add(capturedPiece); // Adicionamos a lista de pecas capturadas
+				piecesOnTheBoard.remove(capturedPiece); // Remove da lista de pecas no tabuleiro
+			}
+		}
+
 		return capturedPiece;
 	}
 
@@ -179,11 +201,12 @@ public class ChessMatch { // Coracao do sistema de xadrez, onde ficara as regras
 
 		// #specialmove Castling kingside rook
 		if (p instanceof King && target.getColumn() == source.getColumn() + 2) {
-			Position sourceT = new Position(source.getRow(), source.getColumn() + 3); 			
-			Position targetT = new Position(source.getRow(), source.getColumn() + 1); 
+			Position sourceT = new Position(source.getRow(), source.getColumn() + 3);
+			Position targetT = new Position(source.getRow(), source.getColumn() + 1);
 
-			ChessPiece rook = (ChessPiece) board.removePiece(targetT);  // Invertemos as posicoes para retornarem aos locais anteriores
-			board.placePiece(rook, sourceT); 
+			ChessPiece rook = (ChessPiece) board.removePiece(targetT); // Invertemos as posicoes para retornarem aos
+																		// locais anteriores
+			board.placePiece(rook, sourceT);
 
 			rook.decreaseMoveCount();
 		}
@@ -192,9 +215,24 @@ public class ChessMatch { // Coracao do sistema de xadrez, onde ficara as regras
 			Position sourceT = new Position(source.getRow(), source.getColumn() - 4);
 			Position targetT = new Position(source.getRow(), source.getColumn() - 1);
 
-			ChessPiece rook = (ChessPiece) board.removePiece(targetT);  // Removemos da posicao de destino
-			board.placePiece(rook, sourceT);  // Colocando novamente na posicao de origem
+			ChessPiece rook = (ChessPiece) board.removePiece(targetT); // Removemos da posicao de destino
+			board.placePiece(rook, sourceT); // Colocando novamente na posicao de origem
 			rook.decreaseMoveCount();
+		}
+
+		// #specialmove en passant
+		if (p instanceof Pawn) {
+			if (source.getColumn() != target.getColumn() && capturedPiece == enPassantVunerable) { 
+				ChessPiece pawn = (ChessPiece)board.removePiece(target);
+				Position pawnPosition;
+				if (p.getColor() == Color.WHITE) {
+					// A peca devolvida fica no target (posicao da diagonal, mas nao correta, precisa subir/descer casa)
+					pawnPosition = new Position(3, target.getColumn());  
+				} else {
+					pawnPosition = new Position(4, target.getColumn());
+				}
+				board.placePiece(pawn, pawnPosition);  // Recolocando a peca no local certo
+			}
 		}
 	}
 
