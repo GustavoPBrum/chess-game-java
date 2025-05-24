@@ -7,7 +7,7 @@ Este é um projeto de **Jogo de Xadrez** desenvolvido em **Java**, utilizando os
 ## 📜 Sobre o Projeto  
 
 O objetivo deste projeto é aplicar conceitos fundamentais de **POO** e criar uma estrutura modular e reutilizável. A implementação cobre:  
-- **Regras completas do xadrez**, incluindo situações como xeque, xeque-mate e empate.  
+- **Regras do xadrez**, incluindo situações como xeque, xeque-mate. 
 - **Jogadas especiais**, que adicionam complexidade e autenticidade ao jogo.  
 
 ---
